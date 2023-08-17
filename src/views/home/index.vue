@@ -38,9 +38,9 @@ const router = useRouter()
     <el-col :span="3">
       <el-menu :default-active="activeKey" class="h-full">
         <el-menu-item :index="menuItem.key" v-for="menuItem in menuList" :key="menuItem.key">
-          <span></span>
           <router-link :to="menuItem.path">{{ menuItem.title }}</router-link>
         </el-menu-item>
+        <div></div>
       </el-menu>
     </el-col>
     <el-col :span="21" class="p-4">

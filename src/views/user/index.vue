@@ -58,8 +58,8 @@
 </template>
 
 <script setup lang="ts">
-import { User } from '@/types/user';
-import { reactive } from 'vue';
+import { User } from '@/types/user'
+import { reactive } from 'vue'
 
 const userList: User[] = [
   {
@@ -70,17 +70,17 @@ const userList: User[] = [
     roles: [1, 2],
     email: '1233'
   }
-];
+]
 const form = reactive({
   username: '',
   gender: '',
   roles: [],
   email: ''
-});
+})
 
 const search = () => {
-  console.log(form);
-};
+  console.log(form)
+}
 </script>
 
 <style></style>
