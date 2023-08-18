@@ -33,13 +33,17 @@
       </el-form-item>
     </el-form>
     <el-table :data="userList" border stripe style="width: 100%">
-      <el-table-column prop="id" label="Date" width="180">
+      <el-table-column prop="id" label="id" width="180">
         <template #default="scope">
-          <span>{{ scope.row.id }}</span>
+          <span>{{ scope.row.user.id }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="username" label="用户名" width="180" />
-      <el-table-column prop="email" label="邮箱" width="180" />
+      <el-table-column prop="email" label="邮箱" width="180">
+        <template #default="scope">
+          <span>{{ scope.row.user?.email }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="gender" label="性别" />
       <el-table-column prop="avatar" label="头像" />
       <el-table-column prop="roles" label="角色" />
@@ -47,9 +51,18 @@
         <template #default="scope">
           <el-button-group>
             <el-button text type="primary" size="small">
-              <router-link :to="`/home/casl/${scope.row.id}`">权限管理</router-link>
+              <router-link :to="`/home/user/casl/${scope.row.user.id}`">权限管理</router-link>
             </el-button>
-            <el-button text type="danger" size="small">删除用户</el-button>
+            <el-popconfirm
+              title="确定要删除吗?"
+              confirm-button-text="确定"
+              cancel-button-text="取消"
+              @confirm="deleteUser"
+            >
+              <template #reference>
+                <el-button text type="danger" size="small">删除用户</el-button>
+              </template>
+            </el-popconfirm>
           </el-button-group>
         </template>
       </el-table-column>
@@ -58,19 +71,9 @@
 </template>
 
 <script setup lang="ts">
-import { User } from '@/types/user'
-import { reactive } from 'vue'
+import userApi, { type Profile } from '@/apis/user/'
+import { onMounted, reactive, ref } from 'vue'
 
-const userList: User[] = [
-  {
-    id: 1,
-    username: 'Tom',
-    gender: 0,
-    avatar: 'No. 189, Grove St, Los Angeles',
-    roles: [1, 2],
-    email: '1233'
-  }
-]
 const form = reactive({
   username: '',
   gender: '',
@@ -81,6 +84,22 @@ const form = reactive({
 const search = () => {
   console.log(form)
 }
+
+const deleteUser = () => {
+  alert(1)
+}
+
+const userList = ref<Profile[]>([])
+
+const getUserList = () => {
+  userApi.findAll({}).then((res) => {
+    userList.value = res.data
+  })
+}
+
+onMounted(() => {
+  getUserList()
+})
 </script>
 
 <style></style>

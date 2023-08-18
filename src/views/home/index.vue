@@ -3,16 +3,12 @@ import { Document, Menu as IconMenu, Location, Setting } from '@element-plus/ico
 import { useRouter } from 'vue-router'
 import { computed } from 'vue'
 import type { MenuItem } from '@/types/menu'
+
 const menuList: MenuItem[] = [
   {
     title: '成员管理',
     key: 'user',
     path: '/home/user'
-  },
-  {
-    title: '菜单管理',
-    key: 'menu',
-    path: '/home/menu'
   },
   {
     title: '文章管理',
@@ -34,6 +30,10 @@ const router = useRouter()
 </script>
 
 <template>
+  <div class="h-[48px] bg-blue-200 flex items-center p-4">
+    <img src="../../assets/logo.png" class="w-[30px] h-[30px] object-fill" alt="" />
+    <h1 class="ml-2">管理系统</h1>
+  </div>
   <el-row class="h-[100vh]">
     <el-col :span="3">
       <el-menu :default-active="activeKey" class="h-full">
@@ -43,8 +43,10 @@ const router = useRouter()
         <div></div>
       </el-menu>
     </el-col>
-    <el-col :span="21" class="p-4">
-      <RouterView />
+    <el-col :span="21">
+      <div class="p-4">
+        <RouterView />
+      </div>
     </el-col>
   </el-row>
 </template>
