@@ -13,7 +13,23 @@ const menuList: MenuItem[] = [
   {
     title: '文章管理',
     key: 'article',
-    path: '/home/article'
+    children: [
+      {
+        title: '文章列表',
+        key: 'articleList',
+        path: '/home/article/list'
+      },
+      {
+        title: '文章分类',
+        key: 'articleCategory',
+        path: '/home/article/category'
+      },
+      {
+        title: '文章标签',
+        key: 'articleTag',
+        path: '/home/article/tag'
+      }
+    ]
   },
   {
     title: '角色管理',
@@ -23,8 +39,19 @@ const menuList: MenuItem[] = [
 ]
 const activeKey = computed(() => {
   const path = router.currentRoute.value.path
-  const currentMenu = menuList.find((item) => item.path === path)
-  return currentMenu?.key
+  let key = ''
+  const dfs = (menu: MenuItem[]) => {
+    menu.forEach((item) => {
+      if (item.path === path) {
+        key = item.key
+      }
+      if (item.children) {
+        dfs(item.children)
+      }
+    })
+  }
+  dfs(menuList)
+  return key
 })
 const router = useRouter()
 </script>
@@ -37,10 +64,24 @@ const router = useRouter()
   <el-row class="h-[100vh]">
     <el-col :span="3">
       <el-menu :default-active="activeKey" class="h-full">
-        <el-menu-item :index="menuItem.key" v-for="menuItem in menuList" :key="menuItem.key">
-          <router-link :to="menuItem.path">{{ menuItem.title }}</router-link>
-        </el-menu-item>
-        <div></div>
+        <template v-for="menuItem in menuList" :key="menuItem.key">
+          <el-sub-menu index="1" v-if="menuItem.children">
+            <template #title>
+              <el-icon><location /></el-icon>
+              <span>{{ menuItem.title }}</span>
+            </template>
+            <el-menu-item
+              :index="subMenu.key"
+              v-for="subMenu in menuItem.children"
+              :key="subMenu.key"
+            >
+              <router-link :to="subMenu.path">{{ subMenu.title }}</router-link>
+            </el-menu-item>
+          </el-sub-menu>
+          <el-menu-item v-else :index="menuItem.key">
+            <router-link :to="menuItem.path">{{ menuItem.title }}</router-link>
+          </el-menu-item>
+        </template>
       </el-menu>
     </el-col>
     <el-col :span="21">

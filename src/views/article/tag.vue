@@ -3,8 +3,8 @@
     <el-form :model="form" label-width="120px">
       <el-row>
         <el-col :span="6">
-          <el-form-item label="角色名称">
-            <el-input v-model="form.name" />
+          <el-form-item label="标签">
+            <el-input v-model.lazy="form.name" />
           </el-form-item>
         </el-col>
         <el-col :span="6">
@@ -13,32 +13,29 @@
         </el-col>
       </el-row>
     </el-form>
-    <el-table :data="roles" border stripe style="width: 100%">
-      <el-table-column prop="id" label="Date">
+    <el-table :data="tags" border stripe style="width: 100%">
+      <el-table-column prop="id" label="id">
         <template #default="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="name" label="角色名称" />
+      <el-table-column prop="name" label="标签名称" />
       <el-table-column prop="createTime" label="创建时间" />
       <el-table-column label="操作">
         <template #default="scope">
           <el-button-group>
-            <el-button text type="primary" size="small">
-              <router-link :to="`/home/role/casl/${scope.row.id}`">权限管理</router-link>
-            </el-button>
-            <el-button text type="primary" size="small" @click="editRole(scope.row)"
-              >编辑角色</el-button
+            <el-button text type="primary" size="small" @click="editTag(scope.row)"
+              >编辑标签</el-button
             >
             <el-popconfirm
               :title="`确认要删除${scope.row.name}吗？`"
               width="230"
               confirm-button-text="确定"
               cancel-button-text="取消"
-              @confirm="deleteRole(scope.row)"
+              @confirm="deleteTag(scope.row)"
             >
               <template #reference>
-                <el-button text type="danger" size="small">删除角色</el-button>
+                <el-button text type="danger" size="small">删除标签</el-button>
               </template>
             </el-popconfirm>
           </el-button-group>
@@ -55,20 +52,20 @@
     />
     <el-dialog
       v-model="dialogVisible"
-      :title="addRoleForm.id ? '编辑角色' : '添加角色'"
+      :title="addTagForm.id ? '编辑标签' : '添加标签'"
       width="30%"
       :before-close="handleClose"
     >
-      <el-form :model="form" label-width="120px" :rules="rules" ref="addRoleFormRef">
-        <el-form-item label="角色名称" prop="name">
-          <el-input v-model="addRoleForm.name" />
+      <el-form :model="addTagForm" label-width="120px" :rules="rules" ref="addTagFormRef">
+        <el-form-item label="标签名称" prop="name">
+          <el-input v-model="addTagForm.name" />
         </el-form-item>
       </el-form>
 
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">Cancel</el-button>
-          <el-button type="primary" @click="addRole(addRoleFormRef)"> Confirm </el-button>
+          <el-button type="primary" @click="addTag(addTagFormRef)"> Confirm </el-button>
         </span>
       </template>
     </el-dialog>
@@ -76,14 +73,15 @@
 </template>
 
 <script setup lang="ts">
-import type { Role } from '@/types/role'
+import type { Tag } from '@/types/tag'
 import type { FormInstance, FormRules } from 'element-plus'
-import roleApi from '@/apis/role'
+import articleApi from '@/apis/article'
 import { reactive, ref, watchEffect } from 'vue'
 import { ElMessage } from 'element-plus'
 
-const roles = ref<Role[]>([])
 const total = ref(0)
+
+const tags = ref<Tag[]>([])
 
 const form = reactive({
   name: '',
@@ -91,25 +89,27 @@ const form = reactive({
   pageSize: 10
 })
 
-const addRoleForm = reactive<{ name: string; id?: number }>({
+const addTagForm = reactive<{ name: string; id?: number }>({
   name: ''
 })
-const addRoleFormRef = ref<FormInstance>()
+const addTagFormRef = ref<FormInstance>()
 
-const rules = reactive<FormRules<typeof addRoleForm>>({
+const rules = reactive<FormRules<typeof addTagForm>>({
   name: [
     {
-      min: 3,
+      min: 2,
       max: 20,
       required: true,
-      message: '角色名称的长度在3-20个字符之间',
+      message: '标签名称的长度在2-20个字符之间',
       trigger: ['blur']
     }
   ]
 })
 
 const search = () => {
-  console.log(form)
+  getTags({
+    name: form.name
+  })
 }
 
 const dialogVisible = ref(false)
@@ -122,37 +122,37 @@ const handleClose = () => {
   dialogVisible.value = false
 }
 
-const addRole = (formEl: FormInstance | undefined) => {
+const addTag = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate((valid) => {
     if (valid) {
-      if (addRoleForm.id) {
-        roleApi
-          .updateRole({
-            name: addRoleForm.name,
-            id: addRoleForm.id
+      if (addTagForm.id) {
+        articleApi
+          .updateTag({
+            name: addTagForm.name,
+            id: addTagForm.id
           })
           .then((res) => {
             ElMessage({
-              message: `角色${res.data.name}编辑成功`,
+              message: `标签${res.data.name}编辑成功`,
               type: 'success'
             })
-            getRoles({ currentPage: form.currentPage, pageSize: form.pageSize, name: form.name })
-            addRoleForm.name = ''
+            getTags({ currentPage: form.currentPage, pageSize: form.pageSize, name: form.name })
+            addTagForm.name = ''
           })
           .finally(() => {
             dialogVisible.value = false
           })
       } else {
-        roleApi
-          .addRole(addRoleForm)
+        articleApi
+          .addTag(addTagForm)
           .then((res) => {
             ElMessage({
-              message: `角色${res.data.name}添加成功`,
+              message: `标签${res.data.name}添加成功`,
               type: 'success'
             })
-            getRoles({ currentPage: form.currentPage, pageSize: form.pageSize, name: form.name })
-            addRoleForm.name = ''
+            getTags({ currentPage: form.currentPage, pageSize: form.pageSize, name: form.name })
+            addTagForm.name = ''
           })
           .finally(() => {
             dialogVisible.value = false
@@ -164,20 +164,20 @@ const addRole = (formEl: FormInstance | undefined) => {
   })
 }
 
-const editRole = (role: Role) => {
-  addRoleForm.id = role.id
-  addRoleForm.name = role.name
+const editTag = (role: Tag) => {
+  addTagForm.id = role.id
+  addTagForm.name = role.name
   dialogVisible.value = true
 }
 
-const deleteRole = (role: Role) => {
-  roleApi
-    .deleteRole({ id: role.id })
+const deleteTag = (role: Tag) => {
+  articleApi
+    .deleteTag({ id: role.id })
     .then(() => {
-      ElMessage.success(`角色${role.name}删除成功`)
+      ElMessage.success(`标签${role.name}删除成功`)
     })
     .then(() => {
-      getRoles({
+      getTags({
         currentPage: form.currentPage,
         pageSize: form.pageSize,
         name: form.name
@@ -185,15 +185,15 @@ const deleteRole = (role: Role) => {
     })
 }
 
-const getRoles = (params: { currentPage?: number; pageSize?: number; name?: string }) => {
-  roleApi.findRoles(params).then((res) => {
-    roles.value = res.data.roles
+const getTags = (params: { currentPage?: number; pageSize?: number; name?: string }) => {
+  articleApi.getAllTags(params).then((res) => {
+    tags.value = res.data.tags
     total.value = res.data.count
   })
 }
 
 watchEffect(() => {
-  getRoles({
+  getTags({
     currentPage: form.currentPage,
     pageSize: form.pageSize,
     name: form.name

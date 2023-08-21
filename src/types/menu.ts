@@ -1,5 +1,6 @@
 export interface MenuItem {
   title: string
-  path: string
+  path?: string
   key: string
+  children?: MenuItem[]
 }

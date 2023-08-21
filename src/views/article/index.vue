@@ -7,16 +7,19 @@
         </el-form-item>
 
         <el-form-item label="分类">
-          <el-select v-model="form.category" multiple placeholder="选择文章分类">
-            <el-option label="Zone one" value="shanghai" />
-            <el-option label="Zone two" value="beijing" />
+          <el-select v-model="form.categoryId" placeholder="请选择文章分类">
+            <el-option
+              :label="category.name"
+              :value="category.id"
+              v-for="category in categoryList"
+              :key="category.id"
+            />
           </el-select>
         </el-form-item>
 
         <el-form-item label="标签">
-          <el-select v-model="form.tags" multiple placeholder="选择文章标签">
-            <el-option label="Zone one" value="shanghai" />
-            <el-option label="Zone two" value="beijing" />
+          <el-select v-model="form.tagIds" multiple placeholder="选择文章标签">
+            <el-option :label="tag.name" :value="tag.id" v-for="tag in tagList" :key="tag.id" />
           </el-select>
         </el-form-item>
       </div>
@@ -35,27 +38,53 @@
         <el-button type="success" @click="create" class="ml-4">新建</el-button>
       </div>
     </el-form>
-    <el-table :data="articles" border stripe style="width: 100%" class="mt-4">
-      <el-table-column prop="id" label="Date">
+    <el-table :data="articleList" border stripe style="width: 100%" class="mt-4">
+      <el-table-column prop="id" label="id">
         <template #default="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="title" label="文章标题" />
-      <el-table-column prop="category" label="文章分类" />
-      <el-table-column prop="tags" label="文章标签" />
+      <el-table-column prop="category" label="文章分类">
+        <template #default="scope">
+          <span>{{ scope.row.category.name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="tags" label="文章标签">
+        <template #default="scope">
+          <span>{{ scope.row.tags.map((tag) => tag.name).join('') }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="updateTime" label="更新时间" />
       <el-table-column label="操作">
         <template #default="scope">
           <el-button-group>
             <el-button text type="primary" size="small">
-              <router-link :to="`/home/article/${scope.row.id}`">详情</router-link>
+              <router-link :to="`/home/article/${scope.row.id}`">编辑</router-link>
             </el-button>
-            <el-button text type="danger" size="small">删除文章</el-button>
+            <el-popconfirm
+              :title="`确认要删除【${scope.row.title}】吗？`"
+              width="230"
+              confirm-button-text="确定"
+              cancel-button-text="取消"
+              @confirm="deleteArticle(scope.row)"
+            >
+              <template #reference>
+                <el-button text type="danger" size="small">删除文章</el-button>
+              </template>
+            </el-popconfirm>
           </el-button-group>
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      small
+      background
+      layout="prev, pager, next"
+      :total="count"
+      v-model:current-page="form.currentPage"
+      class="mt-4"
+    />
   </div>
 </template>
 
@@ -63,7 +92,12 @@
 import type { Role } from '@/types/role'
 import { useRouter } from 'vue-router'
 // import userApi from '@/apis/user/'
-import { reactive } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
+import articleApi from '@/apis/article'
+import type { Article, GetArticleParams } from '@/types/article'
+import { ElMessage } from 'element-plus'
+import type { Category } from '@/types/category'
+import type { Tag } from '@/types/tag'
 
 const router = useRouter()
 
@@ -80,37 +114,79 @@ const userList: Role[] = [
   }
 ]
 
-const articles = [
-  {
-    id: 1,
-    title: 'React基础',
-    tags: [1, 2],
-    category: 3,
-    updateTime: new Date()
-  },
-  {
-    id: 2,
-    title: 'React进阶',
-    tags: [1, 2],
-    category: 3,
-    updateTime: new Date()
-  }
-]
+const articleList = ref<Article[]>([])
+const count = ref(0)
 
-const form = reactive({
+// title?: string
+//   categoryName?: string
+//   tagNames?: string
+//   currentPage?: number
+//   pageSize?: number
+//   createStartTime?: Date
+//   createEndTime?: Date
+
+const form = reactive<GetArticleParams>({
   title: '',
-  tags: [],
-  createTime: '',
-  category: ''
+  tagIds: [],
+  categoryId: undefined,
+  currentPage: 1,
+  pageSize: 10
 })
 
 const search = () => {
-  console.log(form)
+  let { tagIds } = form
+  if (tagIds instanceof Array) {
+    tagIds = tagIds.join(',')
+  }
+  const params = { ...form, tagIds }
+  getArticleList(params)
 }
 
 const create = () => {
   router.push('/home/article/create')
 }
+
+const deleteArticle = (article: Article) => {
+  articleApi
+    .deleteArticle({
+      id: article.id
+    })
+    .then(() => {
+      ElMessage.success('删除成功')
+      getArticleList({ currentPage: form.currentPage, pageSize: form.pageSize })
+    })
+}
+
+const getArticleList = (params: GetArticleParams) => {
+  articleApi.getArticleList(params).then((res) => {
+    articleList.value = res.data.articleList
+    count.value = res.data.count
+  })
+}
+
+const categoryList = ref<Category[]>([])
+const tagList = ref<Tag[]>([])
+
+const getArticleCategoryList = () => {
+  articleApi.getAllCategoryList({}).then((res) => {
+    categoryList.value = res.data.categoryList
+  })
+}
+const getArticleCategoryTags = () => {
+  articleApi.getAllTags({}).then((res) => {
+    tagList.value = res.data.tags
+  })
+}
+
+const getArticleOptions = () => {
+  getArticleCategoryList()
+  getArticleCategoryTags()
+}
+
+onMounted(() => {
+  getArticleOptions()
+  getArticleList({ currentPage: form.currentPage, pageSize: form.pageSize })
+})
 </script>
 
 <style></style>
