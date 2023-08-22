@@ -28,11 +28,21 @@ export interface ArticleDetail extends Omit<Article, 'categoryId' | 'tagIds'> {
   tags: Tag[]
 }
 
+export interface ArticleConditionParams {
+  title?: string
+  categoryId?: number
+  tagIds: number[]
+  currentPage?: number
+  pageSize?: number
+  createTime?: [string, string]
+}
+
 export interface GetArticleParams {
   title?: string
   categoryId?: number
-  tagIds?: number[] | string
+  tagIds?: string
   currentPage?: number
   pageSize?: number
-  createTime?: Date
+  startTime?: string
+  endTime?: string
 }

@@ -55,7 +55,16 @@
           <span>{{ scope.row.tags.map((tag) => tag.name).join('') }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="updateTime" label="更新时间" />
+      <el-table-column prop="updateTime" label="创建时间">
+        <template #default="scope">
+          <span>{{ dayjs(scope.row.createTime).format('YYYY-MM-DD HH:mm:ss') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="updateTime" label="更新时间">
+        <template #default="scope">
+          <span>{{ dayjs(scope.row.updateTime).format('YYYY-MM-DD HH:mm:ss') }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作">
         <template #default="scope">
           <el-button-group>
@@ -94,51 +103,37 @@ import { useRouter } from 'vue-router'
 // import userApi from '@/apis/user/'
 import { onMounted, reactive, ref } from 'vue'
 import articleApi from '@/apis/article'
-import type { Article, GetArticleParams } from '@/types/article'
+import type { Article, ArticleConditionParams, GetArticleParams } from '@/types/article'
 import { ElMessage } from 'element-plus'
 import type { Category } from '@/types/category'
 import type { Tag } from '@/types/tag'
+import dayjs from 'dayjs'
 
 const router = useRouter()
-
-const userList: Role[] = [
-  {
-    id: 1,
-    name: '超级管理员',
-    createTime: new Date()
-  },
-  {
-    id: 2,
-    name: '前端',
-    createTime: new Date()
-  }
-]
 
 const articleList = ref<Article[]>([])
 const count = ref(0)
 
-// title?: string
-//   categoryName?: string
-//   tagNames?: string
-//   currentPage?: number
-//   pageSize?: number
-//   createStartTime?: Date
-//   createEndTime?: Date
-
-const form = reactive<GetArticleParams>({
+const form = reactive<ArticleConditionParams>({
   title: '',
   tagIds: [],
   categoryId: undefined,
   currentPage: 1,
-  pageSize: 10
+  pageSize: 10,
+  createTime: undefined
 })
 
 const search = () => {
-  let { tagIds } = form
-  if (tagIds instanceof Array) {
-    tagIds = tagIds.join(',')
+  const { tagIds, createTime, title, categoryId } = form
+  const params: GetArticleParams = { title, categoryId }
+
+  if (createTime) {
+    params.startTime = createTime[0]
+    params.endTime = createTime[1]
   }
-  const params = { ...form, tagIds }
+  if (tagIds instanceof Array && tagIds.length > 0) {
+    params.tagIds = tagIds.join(',')
+  }
   getArticleList(params)
 }
 

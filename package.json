@@ -18,6 +18,7 @@
     "@element-plus/icons-vue": "^2.1.0",
     "axios": "^1.4.0",
     "bytemd": "^1.21.0",
+    "dayjs": "^1.11.9",
     "element-plus": "^2.3.9",
     "github-markdown-css": "^5.2.0",
     "pinia": "^2.1.4",
