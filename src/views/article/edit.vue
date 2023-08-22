@@ -30,7 +30,7 @@
         <el-form-item label="文章封面">
           <el-upload
             class="avatar-uploader"
-            action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+            :action="imageUploadUrl"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
           >
@@ -75,6 +75,8 @@ import type { Category } from '@/types/category'
 import type { Tag } from '@/types/tag'
 import type { AddArticle } from '@/types/article'
 
+const imageUploadUrl = import.meta.env.VITE_IMAGE_UPLOAD_URL
+
 const router = useRouter()
 const {
   params: { id }
@@ -92,7 +94,7 @@ const form = reactive<AddArticle>({
 const publishPopVisible = ref(false)
 
 const handleAvatarSuccess: UploadProps['onSuccess'] = (response, uploadFile) => {
-  form.cover = URL.createObjectURL(uploadFile.raw!)
+  form.cover = import.meta.env.VITE_IMAGE_PREVIEW_PREFIX + response
 }
 
 enum ARTICLE_STATUS {
