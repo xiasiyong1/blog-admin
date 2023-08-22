@@ -6,6 +6,7 @@ interface AuthAPISchema extends APISchema {
     request: {
       email: string
       password: string
+      code: string
     }
     response: {}
   }
