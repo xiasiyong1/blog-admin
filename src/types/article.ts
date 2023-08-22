@@ -12,7 +12,7 @@ export interface Article {
 
   content: string
 
-  categoryId: number
+  categoryId: number | undefined
 
   tagIds: number[]
 

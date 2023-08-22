@@ -194,7 +194,7 @@ const deleteCategory = (role: Category) => {
 }
 
 const getCategoryList = (params: { currentPage?: number; pageSize?: number; name?: string }) => {
-  articleApi.getAllCategories(params).then((res) => {
+  articleApi.getAllCategoryList(params).then((res) => {
     categoryList.value = res.data.categoryList
     total.value = res.data.count
   })

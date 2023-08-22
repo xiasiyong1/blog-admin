@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Document, Menu as IconMenu, Location, Setting } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { computed } from 'vue'
 import type { MenuItem } from '@/types/menu'
@@ -67,7 +66,6 @@ const router = useRouter()
         <template v-for="menuItem in menuList" :key="menuItem.key">
           <el-sub-menu index="1" v-if="menuItem.children">
             <template #title>
-              <el-icon><location /></el-icon>
               <span>{{ menuItem.title }}</span>
             </template>
             <el-menu-item
