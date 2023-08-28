@@ -1,14 +1,27 @@
-enum GenderEnum {
-  MALE = 1,
-  FEMALE = 1,
-  UN_KNOWN = 0
-}
+import type { GenderEnum } from '@/enums/gender'
+import type { Role } from './role'
 
 export interface User {
-  id: number
   email: string
-  username: string
-  avatar: string
+  id: string
+  roles: Role[]
+  profile: Profile
+}
+
+export interface Profile {
   gender: GenderEnum
-  roles: number[]
+  address?: string
+  avatar?: string
+  username?: string
+  id: string
+  user: User
+}
+
+export interface GetUserList {
+  currentPage: number
+  pageSize: number
+  username?: string
+  gender?: GenderEnum
+  roles?: number[]
+  email?: string
 }

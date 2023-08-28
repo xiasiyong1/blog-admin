@@ -1,34 +1,15 @@
 import type { APISchema } from '@/apis/request/type'
 import { createRequestClient } from '@/apis/request/'
 import type { Casl } from '@/types/casl'
-
-export interface User {
-  email: string
-  id: string
-}
-
-export enum GenderEnum {
-  MALE = 1,
-  FEMALE = 2,
-  UN_KNOWN = 3
-}
-
-export interface Profile {
-  gender: GenderEnum
-  address?: string
-  avatar?: string
-  username?: string
-  id: string
-  user: User
-}
+import type { GetUserList, User } from '@/types/user'
 
 interface TestAPISchema extends APISchema {
   findAll: {
-    request: {
-      name?: string
-      gender?: number
+    request: GetUserList
+    response: {
+      userList: User[]
+      total: number
     }
-    response: Profile[]
   }
 
   getUserInfo: {

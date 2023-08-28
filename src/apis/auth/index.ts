@@ -25,7 +25,7 @@ interface AuthAPISchema extends APISchema {
 const authApi = createRequestClient<AuthAPISchema>({
   apis: {
     signUp: 'POST /auth/signup',
-    signIn: 'POST /auth/signin'
+    signIn: 'POST /auth/signin/admin'
   }
 })
 
