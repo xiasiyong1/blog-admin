@@ -56,7 +56,13 @@
         <el-input v-model="form.title" />
       </el-form-item>
     </el-form>
-    <Editor :value="form.content" :plugins="plugins" @change="handleChange" class="mt-4 editor" />
+    <Editor
+      :value="form.content"
+      :plugins="plugins"
+      @change="handleChange"
+      :uploadImages="uploadImages"
+      class="mt-4 editor"
+    />
   </div>
 </template>
 
@@ -74,6 +80,7 @@ import articleApi from '@/apis/article'
 import type { Category } from '@/types/category'
 import type { Tag } from '@/types/tag'
 import type { AddArticle } from '@/types/article'
+import { uploadImages } from '@/apis/upload'
 
 const imageUploadUrl = import.meta.env.VITE_IMAGE_UPLOAD_URL
 
