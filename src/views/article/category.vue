@@ -128,7 +128,7 @@ const addCategory = (formEl: FormInstance | undefined) => {
     if (valid) {
       if (addCategoryForm.id) {
         articleApi
-          .updateTag({
+          .updateCategory({
             name: addCategoryForm.name,
             id: addCategoryForm.id
           })
@@ -195,8 +195,7 @@ const deleteCategory = (role: Category) => {
 
 const getCategoryList = (params: { currentPage?: number; pageSize?: number; name?: string }) => {
   articleApi.getAllCategoryList(params).then((res) => {
-    categoryList.value = res.data.categoryList
-    total.value = res.data.count
+    categoryList.value = res.data
   })
 }
 

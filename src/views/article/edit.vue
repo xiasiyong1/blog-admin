@@ -152,7 +152,7 @@ const tagList = ref<Tag[]>([])
 
 const getArticleCategoryList = () => {
   articleApi.getAllCategoryList({}).then((res) => {
-    categoryList.value = res.data.categoryList
+    categoryList.value = res.data
   })
 }
 const getArticleCategoryTags = () => {
