@@ -30,6 +30,7 @@ interface ArticleAPISchema extends APISchema {
     request: {
       id: number
       name: string
+      categoryId: number
     }
     response: {
       name: string
@@ -44,15 +45,8 @@ interface ArticleAPISchema extends APISchema {
   getAllCategoryList: {
     request: {
       name?: string
-      currentPage?: number
-      pageSize?: number
     }
-    response: {
-      categoryList: Category[]
-      count: number
-      pageSize: number
-      currentPage: number
-    }
+    response: Category[]
   }
   addCategory: {
     request: {

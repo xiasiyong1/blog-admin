@@ -20,6 +20,11 @@
         </template>
       </el-table-column>
       <el-table-column prop="name" label="标签名称" />
+      <el-table-column prop="category" label="文章分类">
+        <template #default="scope">
+          <span>{{ scope.row.category.name }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="createTime" label="创建时间" />
       <el-table-column label="操作">
         <template #default="scope">
@@ -60,6 +65,16 @@
         <el-form-item label="标签名称" prop="name">
           <el-input v-model="addTagForm.name" />
         </el-form-item>
+        <el-form-item label="文章分类" prop="categoryId">
+          <el-select v-model="addTagForm.categoryId" placeholder="请选择文章分类">
+            <el-option
+              :label="category.name"
+              :value="category.id"
+              v-for="category in categoryList"
+              :key="category.id"
+            />
+          </el-select>
+        </el-form-item>
       </el-form>
 
       <template #footer>
@@ -76,12 +91,14 @@
 import type { Tag } from '@/types/tag'
 import type { FormInstance, FormRules } from 'element-plus'
 import articleApi from '@/apis/article'
-import { reactive, ref, watchEffect } from 'vue'
+import { onMounted, reactive, ref, watchEffect } from 'vue'
 import { ElMessage } from 'element-plus'
+import type { Category } from '@/types/category'
 
 const total = ref(0)
 
 const tags = ref<Tag[]>([])
+const categoryList = ref<Category[]>([])
 
 const form = reactive({
   name: '',
@@ -89,8 +106,9 @@ const form = reactive({
   pageSize: 10
 })
 
-const addTagForm = reactive<{ name: string; id?: number }>({
-  name: ''
+const addTagForm = reactive<{ name: string; id?: number; categoryId: number | undefined }>({
+  name: '',
+  categoryId: undefined
 })
 const addTagFormRef = ref<FormInstance>()
 
@@ -102,6 +120,13 @@ const rules = reactive<FormRules<typeof addTagForm>>({
       required: true,
       message: '标签名称的长度在2-20个字符之间',
       trigger: ['blur']
+    }
+  ],
+  categoryId: [
+    {
+      required: true,
+      message: '请选择分类',
+      trigger: ['blur', 'change']
     }
   ]
 })
@@ -130,7 +155,8 @@ const addTag = (formEl: FormInstance | undefined) => {
         articleApi
           .updateTag({
             name: addTagForm.name,
-            id: addTagForm.id
+            id: addTagForm.id,
+            categoryId: addTagForm.categoryId as number
           })
           .then((res) => {
             ElMessage({
@@ -164,9 +190,10 @@ const addTag = (formEl: FormInstance | undefined) => {
   })
 }
 
-const editTag = (role: Tag) => {
-  addTagForm.id = role.id
-  addTagForm.name = role.name
+const editTag = (tag: Tag) => {
+  addTagForm.id = tag.id
+  addTagForm.name = tag.name
+  addTagForm.categoryId = tag.category.id
   dialogVisible.value = true
 }
 
@@ -198,6 +225,17 @@ watchEffect(() => {
     pageSize: form.pageSize,
     name: form.name
   })
+})
+
+const getCategoryList = () => {
+  articleApi.getAllCategoryList({}).then((res) => {
+    categoryList.value = res.data
+  })
+  categoryList.value = []
+}
+
+onMounted(() => {
+  getCategoryList()
 })
 </script>
 
