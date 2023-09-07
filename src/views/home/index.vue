@@ -73,11 +73,11 @@ const router = useRouter()
               v-for="subMenu in menuItem.children"
               :key="subMenu.key"
             >
-              <router-link :to="subMenu.path">{{ subMenu.title }}</router-link>
+              <router-link :to="subMenu.path" v-if="subMenu.path">{{ subMenu.title }}</router-link>
             </el-menu-item>
           </el-sub-menu>
           <el-menu-item v-else :index="menuItem.key">
-            <router-link :to="menuItem.path">{{ menuItem.title }}</router-link>
+            <router-link :to="menuItem.path" v-if="menuItem.path">{{ menuItem.title }}</router-link>
           </el-menu-item>
         </template>
       </el-menu>

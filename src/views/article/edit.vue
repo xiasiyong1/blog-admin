@@ -92,7 +92,7 @@ const {
 const form = reactive<AddArticle>({
   title: '',
   content: '',
-  categoryId: 0,
+  categoryId: undefined,
   tagIds: [],
   cover: '',
   summary: ''
@@ -125,15 +125,24 @@ const cancelEdit = () => {
 }
 const publishArticle = () => {
   if (id) {
-    articleApi.updateArticle({ id: +id, ...form }).then((res) => {
+    articleApi.updateArticle({ id: +id, article: form }).then((res) => {
       ElMessage.success('编辑成功')
       router.back()
     })
   } else {
-    articleApi.addArticle(form).then((res) => {
-      ElMessage.success('创建成功')
-      router.back()
-    })
+    articleApi
+      .addArticle({
+        title: form.title,
+        cover: form.cover,
+        summary: form.summary,
+        content: form.content,
+        categoryId: form.categoryId as number,
+        tagIds: form.tagIds
+      })
+      .then((res) => {
+        ElMessage.success('创建成功')
+        router.back()
+      })
   }
 }
 

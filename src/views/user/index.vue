@@ -102,7 +102,6 @@ import { onMounted, reactive, ref } from 'vue'
 import { GENDER_CONFIG } from '@/config/gender'
 import { GenderEnum } from '@/enums/gender'
 import type { GetUserList, User } from '@/types/user'
-import { ro } from 'element-plus/lib/locale/index.js'
 import type { Role } from '@/types/role'
 
 const total = ref(0)

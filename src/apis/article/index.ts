@@ -2,7 +2,7 @@ import type { APISchema } from '@/apis/request/type'
 import { createRequestClient } from '@/apis/request/'
 import type { Category } from '../../types/category'
 import type { Tag } from '../../types/tag'
-import type { Article, ArticleDetail, GetArticleParams } from '../../types/article'
+import type { AddArticle, Article, ArticleDetail, GetArticleParams } from '../../types/article'
 
 interface ArticleAPISchema extends APISchema {
   getAllTags: {
@@ -93,12 +93,15 @@ interface ArticleAPISchema extends APISchema {
       summary: string
       content: string
       categoryId: number
-      tagIds: string
+      tagIds: number[]
     }
     response: Article
   }
   updateArticle: {
-    request: Omit<Article, 'createTime' | 'updateTime'>
+    request: {
+      id: number
+      article: AddArticle
+    }
     response: Article
   }
   deleteArticle: {

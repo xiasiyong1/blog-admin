@@ -14,14 +14,16 @@ export interface Article {
 
   categoryId: number | undefined
 
-  tagIds: number[]
+  tags: Tag[]
 
   createTime: Date
 
   updateTime: Date
 }
 
-export type AddArticle = Omit<Article, 'id' | 'createTime' | 'updateTime'>
+export interface AddArticle extends Omit<Article, 'id' | 'tags' | 'createTime' | 'updateTime'> {
+  tagIds: number[]
+}
 
 export interface ArticleDetail extends Omit<Article, 'categoryId' | 'tagIds'> {
   category: Category
