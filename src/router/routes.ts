@@ -1,11 +1,10 @@
 import type { RouteRecordRaw } from 'vue-router'
 import User from '@/views/user/index.vue'
 import UserCasl from '@/views/user/casl.vue'
-import Article from '@/views/article/index.vue'
-import ArticleDetail from '@/views/article/detail.vue'
+import ArticleList from '@/views/article/article-list.vue'
 import ArticleCategory from '@/views/article/article-category.vue'
 import ArticleTag from '@/views/article/articke-tag.vue'
-import EditArticle from '@/views/article/edit.vue'
+import EditArticle from '@/views/article/edit-article.vue'
 import Menu from '@/views/menu/index.vue'
 import Role from '@/views/role/index.vue'
 import RoleCasl from '@/views/role/casl.vue'
@@ -26,7 +25,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       { path: 'user', component: User },
       { path: 'user/casl/:id', component: UserCasl },
-      { path: 'article/list', component: Article },
+      { path: 'article/list', component: ArticleList },
       { path: 'article/category', component: ArticleCategory },
       { path: 'article/tag', component: ArticleTag },
       { path: 'article/:id', component: EditArticle },

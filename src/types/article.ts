@@ -1,5 +1,5 @@
-import type { Category } from './category'
-import type { Tag } from './articke-tag'
+import type { ArticleTag } from './article-tag'
+import type { BaseResponse } from './base'
 
 export interface Article {
   id: number
@@ -14,20 +14,11 @@ export interface Article {
 
   categoryId: number | undefined
 
-  tags: Tag[]
+  tags: ArticleTag[]
 
   createTime: Date
 
   updateTime: Date
-}
-
-export interface AddArticle extends Omit<Article, 'id' | 'tags' | 'createTime' | 'updateTime'> {
-  tagIds: number[]
-}
-
-export interface ArticleDetail extends Omit<Article, 'categoryId' | 'tagIds'> {
-  category: Category
-  tags: Tag[]
 }
 
 export interface ArticleConditionParams {
@@ -39,12 +30,23 @@ export interface ArticleConditionParams {
   createTime?: [string, string]
 }
 
-export interface GetArticleParams {
+export interface CreateArticleDto
+  extends Omit<Article, 'id' | 'tags' | 'createTime' | 'updateTime'> {
+  tagIds: number[]
+}
+export interface FindArticleListDto {
   title?: string
   categoryId?: number
-  tagIds?: string
+  tagIds?: number[]
   currentPage?: number
   pageSize?: number
-  startTime?: string
-  endTime?: string
 }
+export interface UpdateArticleDto extends CreateArticleDto {}
+
+export type CreateArticleResponse = BaseResponse<Article>
+export type UpdateArticleResponse = BaseResponse<Article>
+export type FindArticleListResponse = BaseResponse<{
+  articleList: Article[]
+  count: number
+}>
+export type GetArticleInfoByIdResponse = BaseResponse<Article>

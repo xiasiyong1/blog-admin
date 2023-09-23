@@ -76,10 +76,12 @@ import { Plus } from '@element-plus/icons-vue'
 import { ElMessage, type UploadProps } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import articleApi from '@/apis/article'
-import type { Category } from '@/types/category'
-import type { Tag } from '@/types/tag'
-import type { AddArticle } from '@/types/article'
+import * as articleApi from '@/apis/article'
+import * as articleCategoryApi from '@/apis/article-category'
+import * as articleTagApi from '@/apis/article-tag'
+import type { ArticleCategory } from '@/types/article-category'
+import type { ArticleTag } from '@/types/article-tag'
+import type { CreateArticleDto } from '@/types/article'
 import { uploadImages } from '@/apis/upload'
 
 const imageUploadUrl = import.meta.env.VITE_IMAGE_UPLOAD_URL
@@ -89,7 +91,7 @@ const {
   params: { id }
 } = useRoute()
 
-const form = reactive<AddArticle>({
+const form = reactive<CreateArticleDto>({
   title: '',
   content: '',
   categoryId: undefined,
@@ -125,13 +127,13 @@ const cancelEdit = () => {
 }
 const publishArticle = () => {
   if (id) {
-    articleApi.updateArticle({ id: +id, article: form }).then((res) => {
+    articleApi.updateArticleById(+id, form).then((res) => {
       ElMessage.success('编辑成功')
       router.back()
     })
   } else {
     articleApi
-      .addArticle({
+      .createArticle({
         title: form.title,
         cover: form.cover,
         summary: form.summary,
@@ -156,17 +158,17 @@ const back = () => {
   router.back()
 }
 
-const categoryList = ref<Category[]>([])
-const tagList = ref<Tag[]>([])
+const categoryList = ref<ArticleCategory[]>([])
+const tagList = ref<ArticleTag[]>([])
 
 const getArticleCategoryList = () => {
-  articleApi.getAllCategoryList({}).then((res) => {
-    categoryList.value = res.data
+  articleCategoryApi.getArticleCategoryList({}).then((res) => {
+    categoryList.value = res.data.data
   })
 }
 const getArticleCategoryTags = () => {
-  articleApi.getAllTags({}).then((res) => {
-    tagList.value = res.data.tags
+  articleTagApi.getArticleTagList({}).then((res) => {
+    tagList.value = res.data.data
   })
 }
 
@@ -176,13 +178,13 @@ const getArticleOptions = () => {
 }
 
 const getArticleDetail = (id: number) => {
-  articleApi.getArticle({ id }).then((res) => {
-    form.title = res.data.title
-    form.content = res.data.content
-    form.categoryId = res.data.category.id
-    form.tagIds = res.data.tags.map((tag) => tag.id)
-    form.cover = res.data.cover
-    form.summary = res.data.summary
+  articleApi.getArticleInfoById(id).then((res) => {
+    form.title = res.data.data.title
+    form.content = res.data.data.content
+    form.categoryId = res.data.data.categoryId
+    form.tagIds = res.data.data.tags.map((tag) => tag.id)
+    form.cover = res.data.data.cover
+    form.summary = res.data.data.summary
   })
 }
 

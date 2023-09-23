@@ -47,12 +47,12 @@
       <el-table-column prop="title" label="文章标题" />
       <el-table-column prop="category" label="文章分类">
         <template #default="scope">
-          <span>{{ scope.row.category.name }}</span>
+          <span>{{ articleCategoryNameMap[scope.row.categoryId] }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="tags" label="文章标签">
         <template #default="scope">
-          <span>{{ scope.row.tags.map((tag) => tag.name).join('') }}</span>
+          <span>{{ scope.row.tags.map((tag) => tag.name).join(',') }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="updateTime" label="创建时间">
@@ -101,12 +101,14 @@
 import type { Role } from '@/types/role'
 import { useRouter } from 'vue-router'
 // import userApi from '@/apis/user/'
-import { onMounted, reactive, ref } from 'vue'
-import articleApi from '@/apis/article'
-import type { Article, ArticleConditionParams, GetArticleParams } from '@/types/article'
+import { computed, onMounted, reactive, ref } from 'vue'
+import { findArticleList, deleteArticleById } from '@/apis/article'
+import * as articleCategoryApi from '@/apis/article-category'
+import * as articleTagApi from '@/apis/article-tag'
+import type { Article, ArticleConditionParams, FindArticleListDto } from '@/types/article'
 import { ElMessage } from 'element-plus'
-import type { Category } from '@/types/category'
-import type { Tag } from '@/types/tag'
+import type { ArticleCategory } from '@/types/article-category'
+import type { ArticleTag } from '@/types/article-tag'
 import dayjs from 'dayjs'
 
 const router = useRouter()
@@ -142,34 +144,40 @@ const create = () => {
 }
 
 const deleteArticle = (article: Article) => {
-  articleApi
-    .deleteArticle({
-      id: article.id
-    })
-    .then(() => {
-      ElMessage.success('删除成功')
-      getArticleList({ currentPage: form.currentPage, pageSize: form.pageSize })
-    })
-}
-
-const getArticleList = (params: GetArticleParams) => {
-  articleApi.getArticleList(params).then((res) => {
-    articleList.value = res.data.articleList
-    count.value = res.data.count
+  deleteArticleById(article.id).then(() => {
+    ElMessage.success('删除成功')
+    getArticleList({ currentPage: form.currentPage, pageSize: form.pageSize })
   })
 }
 
-const categoryList = ref<Category[]>([])
-const tagList = ref<Tag[]>([])
+const getArticleList = (params: FindArticleListDto) => {
+  findArticleList(params).then((res) => {
+    articleList.value = res.data.data.articleList
+    count.value = res.data.data.count
+  })
+}
+
+const categoryList = ref<ArticleCategory[]>([])
+const tagList = ref<ArticleTag[]>([])
+
+const articleCategoryNameMap = computed(() => {
+  return categoryList.value.reduce(
+    (acc, cur) => {
+      acc[cur.id] = cur.name
+      return acc
+    },
+    {} as Record<number, string>
+  )
+})
 
 const getArticleCategoryList = () => {
-  articleApi.getAllCategoryList({}).then((res) => {
-    categoryList.value = res.data
+  articleCategoryApi.getArticleCategoryList({}).then((res) => {
+    categoryList.value = res.data.data
   })
 }
 const getArticleCategoryTags = () => {
-  articleApi.getAllTags({}).then((res) => {
-    tagList.value = res.data.tags
+  articleTagApi.getArticleTagList({}).then((res) => {
+    tagList.value = res.data.data
   })
 }
 
@@ -185,4 +193,3 @@ onMounted(() => {
 </script>
 
 <style></style>
-@/types/articke-tag
