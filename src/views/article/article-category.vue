@@ -42,14 +42,6 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination
-      small
-      background
-      layout="prev, pager, next"
-      :total="total"
-      v-model:current-page="form.currentPage"
-      class="mt-4"
-    />
     <el-dialog
       v-model="dialogVisible"
       :title="addCategoryForm.id ? '编辑分类' : '添加分类'"
@@ -73,20 +65,22 @@
 </template>
 
 <script setup lang="ts">
-import type { Category } from '@/types/category'
+import type { ArticleCategory, GetArticleCategoryListDto } from '@/types/article-category'
 import type { FormInstance, FormRules } from 'element-plus'
-import articleApi from '@/apis/article'
+import {
+  createArticleCategory,
+  getArticleCategoryList,
+  deleteArticleCategoryById,
+  updateArticleCategoryById
+} from '@/apis/article-category'
+
 import { reactive, ref, watchEffect } from 'vue'
 import { ElMessage } from 'element-plus'
 
-const total = ref(0)
-
-const categoryList = ref<Category[]>([])
+const categoryList = ref<ArticleCategory[]>([])
 
 const form = reactive({
-  name: '',
-  currentPage: 1,
-  pageSize: 10
+  name: ''
 })
 
 const addCategoryForm = reactive<{ name: string; id?: number }>({
@@ -127,19 +121,15 @@ const addCategory = (formEl: FormInstance | undefined) => {
   formEl.validate((valid) => {
     if (valid) {
       if (addCategoryForm.id) {
-        articleApi
-          .updateCategory({
-            name: addCategoryForm.name,
-            id: addCategoryForm.id
-          })
+        updateArticleCategoryById(addCategoryForm.id, {
+          name: addCategoryForm.name
+        })
           .then((res) => {
             ElMessage({
-              message: `分类${res.data.name}编辑成功`,
+              message: `分类${res.data.data.name}编辑成功`,
               type: 'success'
             })
             getCategoryList({
-              currentPage: form.currentPage,
-              pageSize: form.pageSize,
               name: form.name
             })
             addCategoryForm.name = ''
@@ -148,16 +138,13 @@ const addCategory = (formEl: FormInstance | undefined) => {
             dialogVisible.value = false
           })
       } else {
-        articleApi
-          .addCategory(addCategoryForm)
+        createArticleCategory(addCategoryForm)
           .then((res) => {
             ElMessage({
-              message: `分类${res.data.name}添加成功`,
+              message: `分类${res.data.data.name}添加成功`,
               type: 'success'
             })
             getCategoryList({
-              currentPage: form.currentPage,
-              pageSize: form.pageSize,
               name: form.name
             })
             addCategoryForm.name = ''
@@ -172,37 +159,32 @@ const addCategory = (formEl: FormInstance | undefined) => {
   })
 }
 
-const editCategory = (role: Category) => {
+const editCategory = (role: ArticleCategory) => {
   addCategoryForm.id = role.id
   addCategoryForm.name = role.name
   dialogVisible.value = true
 }
 
-const deleteCategory = (role: Category) => {
-  articleApi
-    .deleteCategory({ id: role.id })
+const deleteCategory = (role: ArticleCategory) => {
+  deleteArticleCategoryById(role.id)
     .then(() => {
       ElMessage.success(`分类${role.name}删除成功`)
     })
     .then(() => {
       getCategoryList({
-        currentPage: form.currentPage,
-        pageSize: form.pageSize,
         name: form.name
       })
     })
 }
 
-const getCategoryList = (params: { currentPage?: number; pageSize?: number; name?: string }) => {
-  articleApi.getAllCategoryList(params).then((res) => {
-    categoryList.value = res.data
+const getCategoryList = (params: GetArticleCategoryListDto) => {
+  getArticleCategoryList(params).then((res) => {
+    categoryList.value = res.data.data
   })
 }
 
 watchEffect(() => {
   getCategoryList({
-    currentPage: form.currentPage,
-    pageSize: form.pageSize,
     name: form.name
   })
 })

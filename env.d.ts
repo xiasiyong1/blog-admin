@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
+  readonly VITE_REQUEST_BASE_URL: string
   readonly VITE_IMAGE_UPLOAD_URL: string
   readonly VITE_IMAGE_PREVIEW_PREFIX: string
   // more env variables...

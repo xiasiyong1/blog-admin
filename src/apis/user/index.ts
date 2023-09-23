@@ -1,53 +1,24 @@
-import type { APISchema } from '@/apis/request/type'
-import { createRequestClient } from '@/apis/request/'
-import type { Casl } from '@/types/casl'
-import type { GetUserList, User } from '@/types/user'
+import axiosInstance from '@/helpers/request'
+import type {
+  FindUsersParams,
+  FindUsersResponse,
+  UserInfoResponse,
+  UpdateUserDto
+} from '@/types/user'
+import type { SimpleSuccessResponse } from '@/types/base'
 
-interface TestAPISchema extends APISchema {
-  findAll: {
-    request: GetUserList
-    response: {
-      userList: User[]
-      total: number
-    }
-  }
-
-  getUserInfo: {
-    request: {
-      id: string
-    }
-    response: {
-      avatar: string
-      id: number
-      name: string
-    }
-  }
-  delete: {
-    request: {
-      id: number
-    }
-    response: {
-      avatar: string
-      id: number
-      name: string
-    }
-  }
-  updateCasl: {
-    request: {
-      id: string
-      casls: Casl[]
-    }
-    response: {}
-  }
+export const findUsers = (params: FindUsersParams) => {
+  return axiosInstance.get<FindUsersResponse>('/user/list', { params })
 }
+export const getUserInfo = () => {}
+export const updateUserInfo = () => {}
 
-const userApi = createRequestClient<TestAPISchema>({
-  apis: {
-    findAll: 'GET /user',
-    getUserInfo: 'GET /user/:id',
-    delete: 'PATCH /user/:id',
-    updateCasl: 'PATCH /user/casl/:id'
-  }
-})
-
-export default userApi
+export const getUserInfoById = (userId: string) => {
+  return axiosInstance.get<UserInfoResponse>(`/user/${userId}`)
+}
+export const updateUserInfoById = (userId: string, updateUserDto: UpdateUserDto) => {
+  return axiosInstance.patch<SimpleSuccessResponse>(`/user/${userId}`, updateUserDto)
+}
+export const deleteUserById = (userId: string) => {
+  return axiosInstance.delete<SimpleSuccessResponse>(`/user/${userId}`)
+}

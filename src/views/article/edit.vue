@@ -219,3 +219,4 @@ onMounted(() => {
   text-align: center;
 }
 </style>
+@/types/articke-tag

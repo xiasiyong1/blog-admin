@@ -1,5 +1,5 @@
 import type { Category } from './category'
-import type { Tag } from './tag'
+import type { Tag } from './articke-tag'
 
 export interface Article {
   id: number

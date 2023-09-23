@@ -45,21 +45,13 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination
-      small
-      background
-      layout="prev, pager, next"
-      :total="total"
-      v-model:current-page="form.currentPage"
-      class="mt-4"
-    />
     <el-dialog
       v-model="dialogVisible"
       :title="addRoleForm.id ? '编辑角色' : '添加角色'"
       width="30%"
       :before-close="handleClose"
     >
-      <el-form :model="form" label-width="120px" :rules="rules" ref="addRoleFormRef">
+      <el-form :model="addRoleForm" label-width="120px" :rules="rules" ref="addRoleFormRef">
         <el-form-item label="角色名称" prop="name">
           <el-input v-model="addRoleForm.name" />
         </el-form-item>
@@ -76,27 +68,29 @@
 </template>
 
 <script setup lang="ts">
-import type { Role } from '@/types/role'
+import type { FindRoleDto, Role } from '@/types/role'
 import type { FormInstance, FormRules } from 'element-plus'
-import roleApi from '@/apis/role'
+import { createRole, findRoles, updateRoleById, deleteRoleById } from '@/apis/role'
 import { reactive, ref, watchEffect } from 'vue'
 import { ElMessage } from 'element-plus'
 
 const roles = ref<Role[]>([])
-const total = ref(0)
 
 const form = reactive({
-  name: '',
-  currentPage: 1,
-  pageSize: 10
+  name: ''
 })
 
-const addRoleForm = reactive<{ name: string; id?: number }>({
+interface AddRoleForm {
+  name: string
+  id?: number
+}
+
+const addRoleForm = reactive<AddRoleForm>({
   name: ''
 })
 const addRoleFormRef = ref<FormInstance>()
 
-const rules = reactive<FormRules<typeof addRoleForm>>({
+const rules = reactive<FormRules<AddRoleForm>>({
   name: [
     {
       min: 3,
@@ -109,7 +103,11 @@ const rules = reactive<FormRules<typeof addRoleForm>>({
 })
 
 const search = () => {
-  console.log(form)
+  findRoles({
+    name: form.name
+  }).then((res) => {
+    roles.value = res.data.data
+  })
 }
 
 const dialogVisible = ref(false)
@@ -127,31 +125,28 @@ const addRole = (formEl: FormInstance | undefined) => {
   formEl.validate((valid) => {
     if (valid) {
       if (addRoleForm.id) {
-        roleApi
-          .updateRole({
-            name: addRoleForm.name,
-            id: addRoleForm.id
-          })
-          .then((res) => {
+        updateRoleById(addRoleForm.id, {
+          name: addRoleForm.name
+        })
+          .then(() => {
             ElMessage({
-              message: `角色${res.data.name}编辑成功`,
+              message: `角色${addRoleForm.name}编辑成功`,
               type: 'success'
             })
-            getRoles({ currentPage: form.currentPage, pageSize: form.pageSize, name: form.name })
+            getRoles()
             addRoleForm.name = ''
           })
           .finally(() => {
             dialogVisible.value = false
           })
       } else {
-        roleApi
-          .addRole(addRoleForm)
+        createRole(addRoleForm)
           .then((res) => {
             ElMessage({
-              message: `角色${res.data.name}添加成功`,
+              message: `角色${res.data.data.name}添加成功`,
               type: 'success'
             })
-            getRoles({ currentPage: form.currentPage, pageSize: form.pageSize, name: form.name })
+            getRoles()
             addRoleForm.name = ''
           })
           .finally(() => {
@@ -171,31 +166,25 @@ const editRole = (role: Role) => {
 }
 
 const deleteRole = (role: Role) => {
-  roleApi
-    .deleteRole({ id: role.id })
+  deleteRoleById(role.id)
     .then(() => {
       ElMessage.success(`角色${role.name}删除成功`)
     })
     .then(() => {
       getRoles({
-        currentPage: form.currentPage,
-        pageSize: form.pageSize,
         name: form.name
       })
     })
 }
 
-const getRoles = (params: { currentPage?: number; pageSize?: number; name?: string }) => {
-  roleApi.findRoles(params).then((res) => {
-    roles.value = res.data.roles
-    total.value = res.data.count
+const getRoles = (params?: FindRoleDto) => {
+  findRoles(params).then((res) => {
+    roles.value = res.data.data
   })
 }
 
 watchEffect(() => {
   getRoles({
-    currentPage: form.currentPage,
-    pageSize: form.pageSize,
     name: form.name
   })
 })

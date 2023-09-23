@@ -48,7 +48,7 @@
 import { reactive, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import type { FormInstance, FormRules } from 'element-plus'
-import authApi from '@/apis/auth'
+import { signUpWithEmail } from '@/apis/auth'
 import emailApi from '@/apis/email'
 import { CodeStatusEnum } from '@/enums/code'
 const DEFAULT_EXPIRE_TIME = 5 * 60
@@ -122,13 +122,11 @@ const onSubmit = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate((valid) => {
     if (valid) {
-      console.log('submit!')
-      authApi
-        .signUp({
-          email: form.email,
-          password: form.password,
-          code: form.code
-        })
+      signUpWithEmail({
+        email: form.email,
+        password: form.password,
+        code: form.code
+      })
         .then(() => {
           router.replace('/signin?email=' + form.email)
         })

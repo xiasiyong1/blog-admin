@@ -240,3 +240,4 @@ onMounted(() => {
 </script>
 
 <style></style>
+@/types/articke-tag

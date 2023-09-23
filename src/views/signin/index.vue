@@ -34,9 +34,9 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import authApi from '@/apis/auth'
+import { signInWithEmail } from '@/apis/auth'
 import type { FormInstance, FormRules } from 'element-plus'
-import { setAccessToken } from '@/helper/localstorge'
+import { setAccessToken } from '@/helpers/localstorge'
 
 const router = useRouter()
 const route = useRoute()
@@ -75,14 +75,12 @@ const onSubmit = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate((valid) => {
     if (valid) {
-      console.log('submit!')
-      authApi
-        .signIn({
-          email: form.email,
-          password: form.password
-        })
+      signInWithEmail({
+        email: form.email,
+        password: form.password
+      })
         .then((res) => {
-          setAccessToken(res.data.access_token)
+          setAccessToken(res.data.data.access_token)
           router.replace('/home')
         })
         .catch((err) => {

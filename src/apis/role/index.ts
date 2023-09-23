@@ -1,69 +1,26 @@
-import type { APISchema } from '@/apis/request/type'
-import { createRequestClient } from '@/apis/request/'
-import type { Role } from '../../types/role'
-import type { Casl } from '@/types/casl'
+import axiosInstance from '@/helpers/request'
+import type {
+  CreateRoleDto,
+  UpdateRoleDto,
+  FindRoleDto,
+  CreateRoleResponse,
+  FindRoleResponse,
+  GetRoleInfoResponse
+} from '@/types/role'
+import type { SimpleSuccessResponse } from '@/types/base'
 
-interface RoleAPISchema extends APISchema {
-  findRoles: {
-    request: {
-      name?: string
-      currentPage?: number
-      pageSize?: number
-    }
-    response: {
-      roles: Role[]
-      count: number
-      pageSize: number
-      currentPage: number
-    }
-  }
-  addRole: {
-    request: {
-      name: string
-    }
-    response: {
-      name: string
-    }
-  }
-  updateRole: {
-    request: {
-      id: number
-      name: string
-    }
-    response: {
-      name: string
-    }
-  }
-  deleteRole: {
-    request: {
-      id: number
-    }
-    response: {}
-  }
-  getRoleInfo: {
-    request: {
-      id: number
-    }
-    response: Role
-  }
-  updateCasl: {
-    request: {
-      id: number
-      casls: Casl[]
-    }
-    response: {}
-  }
+export const createRole = (params: CreateRoleDto) => {
+  return axiosInstance.post<CreateRoleResponse>('/role', params)
 }
-
-const roleApi = createRequestClient<RoleAPISchema>({
-  apis: {
-    findRoles: 'GET /role',
-    getRoleInfo: 'GET /role/:id',
-    addRole: 'POST /role',
-    updateRole: 'PATCH /role/:id',
-    deleteRole: 'DELETE /role/:id',
-    updateCasl: 'PATCH /role/casl/:id'
-  }
-})
-
-export default roleApi
+export const findRoles = (params: FindRoleDto | undefined) => {
+  return axiosInstance.get<FindRoleResponse>('/role/list', { params })
+}
+export const getRoleInfoById = (id: number) => {
+  return axiosInstance.get<GetRoleInfoResponse>(`/role/${id}`)
+}
+export const deleteRoleById = (id: number) => {
+  return axiosInstance.delete<SimpleSuccessResponse>(`/role/${id}`)
+}
+export const updateRoleById = (id: number, updateRoleDto: UpdateRoleDto) => {
+  return axiosInstance.patch<SimpleSuccessResponse>(`/role/${id}`, updateRoleDto)
+}

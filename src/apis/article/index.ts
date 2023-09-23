@@ -1,7 +1,7 @@
 import type { APISchema } from '@/apis/request/type'
 import { createRequestClient } from '@/apis/request/'
 import type { Category } from '../../types/category'
-import type { Tag } from '../../types/tag'
+import type { Tag } from '../../types/articke-tag'
 import type { AddArticle, Article, ArticleDetail, GetArticleParams } from '../../types/article'
 
 interface ArticleAPISchema extends APISchema {

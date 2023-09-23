@@ -38,7 +38,7 @@
       </el-table-column>
       <el-table-column prop="username" label="用户名" width="180">
         <template #default="scope">
-          <span>{{ scope.row.profile?.username }}</span>
+          <span>{{ scope.row.username }}</span>
         </template>
       </el-table-column>
 
@@ -49,7 +49,7 @@
       </el-table-column>
       <el-table-column prop="gender" label="性别">
         <template #default="scope">
-          <span>{{ getGenderText(scope.row.profile.gender) }}</span>
+          <span>{{ getGenderText(scope.row.gender) }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="avatar" label="头像">
@@ -96,8 +96,8 @@
 </template>
 
 <script setup lang="ts">
-import userApi from '@/apis/user/'
-import roleApi from '@/apis/role/'
+import { findUsers } from '@/apis/user/'
+import { findRoles } from '@/apis/role/'
 import { onMounted, reactive, ref } from 'vue'
 import { GENDER_CONFIG } from '@/config/gender'
 import { GenderEnum } from '@/enums/gender'
@@ -131,14 +131,14 @@ const deleteUser = () => {
 const userList = ref<User[]>([])
 
 const getUserList = (params: GetUserList) => {
-  userApi.findAll(params).then((res) => {
-    userList.value = res.data.userList
-    total.value = res.data.total
+  findUsers(params).then((res) => {
+    userList.value = res.data.data.userList
+    total.value = res.data.data.count
   })
 }
 const getRoles = () => {
-  roleApi.findRoles({}).then((res) => {
-    roles.value = res.data.roles
+  findRoles().then((res) => {
+    roles.value = res.data.data
   })
 }
 
