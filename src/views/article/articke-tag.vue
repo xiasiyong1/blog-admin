@@ -22,7 +22,7 @@
       <el-table-column prop="name" label="标签名称" />
       <el-table-column prop="category" label="文章分类">
         <template #default="scope">
-          <span>{{ scope.row.category.name }}</span>
+          <span>{{ articleCategoryNameMap[scope.row.categoryId] }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="createTime" label="创建时间" />
@@ -88,17 +88,23 @@
 </template>
 
 <script setup lang="ts">
-import type { Tag } from '@/types/tag'
+import type { ArticleTag, GetArticleTagDto } from '@/types/article-tag'
 import type { FormInstance, FormRules } from 'element-plus'
-import articleApi from '@/apis/article'
-import { onMounted, reactive, ref, watchEffect } from 'vue'
+import {
+  getArticleTagList,
+  createArticleTag,
+  deleteArticleTagById,
+  updateArticleTagById
+} from '@/apis/article-tag'
+import { getArticleCategoryList } from '@/apis/article-category'
+import { computed, onMounted, reactive, ref, watchEffect } from 'vue'
 import { ElMessage } from 'element-plus'
-import type { Category } from '@/types/category'
+import type { ArticleCategory } from '@/types/article-category'
 
 const total = ref(0)
 
-const tags = ref<Tag[]>([])
-const categoryList = ref<Category[]>([])
+const tags = ref<ArticleTag[]>([])
+const categoryList = ref<ArticleCategory[]>([])
 
 const form = reactive({
   name: '',
@@ -152,32 +158,32 @@ const addTag = (formEl: FormInstance | undefined) => {
   formEl.validate((valid) => {
     if (valid) {
       if (addTagForm.id) {
-        articleApi
-          .updateTag({
-            name: addTagForm.name,
-            id: addTagForm.id,
-            categoryId: addTagForm.categoryId as number
-          })
+        updateArticleTagById(addTagForm.id, {
+          name: addTagForm.name,
+          categoryId: addTagForm.categoryId as number
+        })
           .then((res) => {
             ElMessage({
-              message: `标签${res.data.name}编辑成功`,
+              message: `标签${res.data.data.name}编辑成功`,
               type: 'success'
             })
-            getTags({ currentPage: form.currentPage, pageSize: form.pageSize, name: form.name })
+            getTags({ name: form.name })
             addTagForm.name = ''
           })
           .finally(() => {
             dialogVisible.value = false
           })
       } else {
-        articleApi
-          .addTag(addTagForm)
+        createArticleTag({
+          name: addTagForm.name,
+          categoryId: addTagForm.categoryId as number
+        })
           .then((res) => {
             ElMessage({
-              message: `标签${res.data.name}添加成功`,
+              message: `标签${res.data.data.name}添加成功`,
               type: 'success'
             })
-            getTags({ currentPage: form.currentPage, pageSize: form.pageSize, name: form.name })
+            getTags({ name: form.name })
             addTagForm.name = ''
           })
           .finally(() => {
@@ -190,46 +196,49 @@ const addTag = (formEl: FormInstance | undefined) => {
   })
 }
 
-const editTag = (tag: Tag) => {
+const editTag = (tag: ArticleTag) => {
   addTagForm.id = tag.id
   addTagForm.name = tag.name
-  addTagForm.categoryId = tag.category.id
+  addTagForm.categoryId = tag.categoryId
   dialogVisible.value = true
 }
 
-const deleteTag = (role: Tag) => {
-  articleApi
-    .deleteTag({ id: role.id })
+const deleteTag = (role: ArticleTag) => {
+  deleteArticleTagById(role.id)
     .then(() => {
       ElMessage.success(`标签${role.name}删除成功`)
     })
     .then(() => {
       getTags({
-        currentPage: form.currentPage,
-        pageSize: form.pageSize,
         name: form.name
       })
     })
 }
 
-const getTags = (params: { currentPage?: number; pageSize?: number; name?: string }) => {
-  articleApi.getAllTags(params).then((res) => {
-    tags.value = res.data.tags
-    total.value = res.data.count
+const getTags = (params: GetArticleTagDto) => {
+  getArticleTagList(params).then((res) => {
+    tags.value = res.data.data
   })
 }
+const articleCategoryNameMap = computed(() => {
+  return categoryList.value.reduce(
+    (acc, cur) => {
+      acc[cur.id] = cur.name
+      return acc
+    },
+    {} as Record<number, string>
+  )
+})
 
 watchEffect(() => {
   getTags({
-    currentPage: form.currentPage,
-    pageSize: form.pageSize,
     name: form.name
   })
 })
 
 const getCategoryList = () => {
-  articleApi.getAllCategoryList({}).then((res) => {
-    categoryList.value = res.data
+  getArticleCategoryList({}).then((res) => {
+    categoryList.value = res.data.data
   })
   categoryList.value = []
 }
@@ -240,4 +249,3 @@ onMounted(() => {
 </script>
 
 <style></style>
-@/types/articke-tag

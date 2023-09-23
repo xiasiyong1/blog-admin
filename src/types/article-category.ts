@@ -1,4 +1,4 @@
-import type { ArticleTag } from './articke-tag'
+import type { ArticleTag } from './article-tag'
 import type { BaseResponse } from './base'
 
 export interface ArticleCategory {
@@ -15,7 +15,7 @@ export interface UpdateArticleCategoryDto {
   name: string
 }
 export interface GetArticleCategoryListDto {
-  name: string
+  name?: string
 }
 
 export type CreateArticleCategoryResponse = BaseResponse<ArticleCategory>
