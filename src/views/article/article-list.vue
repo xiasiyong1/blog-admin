@@ -52,7 +52,11 @@
       </el-table-column>
       <el-table-column prop="tags" label="文章标签">
         <template #default="scope">
-          <span>{{ scope.row.tags.map((tag) => tag.name).join(',') }}</span>
+          <ElSpace>
+            <ElTag v-for="tag in scope.row.tags" :key="tag.id">
+              {{ tag.name }}
+            </ElTag>
+          </ElSpace>
         </template>
       </el-table-column>
       <el-table-column prop="updateTime" label="创建时间">
@@ -114,7 +118,7 @@ import { findArticleList, deleteArticleById } from '@/apis/article'
 import * as articleCategoryApi from '@/apis/article-category'
 import * as articleTagApi from '@/apis/article-tag'
 import type { Article, ArticleConditionParams, FindArticleListDto } from '@/types/article'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElTag, ElSpace } from 'element-plus'
 import type { ArticleCategory } from '@/types/article-category'
 import type { ArticleTag } from '@/types/article-tag'
 import dayjs from 'dayjs'
