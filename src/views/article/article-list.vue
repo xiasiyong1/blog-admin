@@ -71,6 +71,16 @@
             <el-button text type="primary" size="small">
               <router-link :to="`/home/article/${scope.row.id}`">编辑</router-link>
             </el-button>
+            <el-button
+              text
+              type="success"
+              size="small"
+              @click="
+                changeArticleRecommendStatus(scope.row.id, articleRecommendStatusMap[scope.row.id])
+              "
+            >
+              {{ articleRecommendStatusMap[scope.row.id] ? '取消推荐' : '推荐文章' }}
+            </el-button>
             <el-popconfirm
               :title="`确认要删除【${scope.row.title}】吗？`"
               width="230"
@@ -98,9 +108,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Role } from '@/types/role'
 import { useRouter } from 'vue-router'
-// import userApi from '@/apis/user/'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { findArticleList, deleteArticleById } from '@/apis/article'
 import * as articleCategoryApi from '@/apis/article-category'
@@ -110,11 +118,14 @@ import { ElMessage } from 'element-plus'
 import type { ArticleCategory } from '@/types/article-category'
 import type { ArticleTag } from '@/types/article-tag'
 import dayjs from 'dayjs'
+import useArticleRecommend from '@/hooks/use-article-recommend'
 
 const router = useRouter()
 
 const articleList = ref<Article[]>([])
 const count = ref(0)
+
+const { articleRecommendStatusMap, changeArticleRecommendStatus } = useArticleRecommend()
 
 const form = reactive<ArticleConditionParams>({
   title: '',
@@ -180,14 +191,13 @@ const getArticleCategoryTags = () => {
     tagList.value = res.data.data
   })
 }
-
-const getArticleOptions = () => {
+const getArticleData = () => {
   getArticleCategoryList()
   getArticleCategoryTags()
 }
 
 onMounted(() => {
-  getArticleOptions()
+  getArticleData()
   getArticleList({ currentPage: form.currentPage, pageSize: form.pageSize })
 })
 </script>
