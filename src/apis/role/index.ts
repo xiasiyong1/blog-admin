@@ -12,7 +12,7 @@ import type { SimpleSuccessResponse } from '@/types/base'
 export const createRole = (params: CreateRoleDto) => {
   return axiosInstance.post<CreateRoleResponse>('/role', params)
 }
-export const findRoles = (params: FindRoleDto | undefined) => {
+export const findRoles = (params?: FindRoleDto) => {
   return axiosInstance.get<FindRoleResponse>('/role/list', { params })
 }
 export const getRoleInfoById = (id: number) => {

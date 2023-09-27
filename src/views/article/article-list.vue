@@ -142,7 +142,7 @@ const form = reactive<ArticleConditionParams>({
 
 const search = () => {
   const { tagIds, createTime, title, categoryId } = form
-  const params: GetArticleParams = { title, categoryId }
+  const params: any = { title, categoryId }
 
   if (createTime) {
     params.startTime = createTime[0]

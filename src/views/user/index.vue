@@ -96,8 +96,8 @@
 </template>
 
 <script setup lang="ts">
-import { findUsers } from '@/apis/user/'
-import { findRoles } from '@/apis/role/'
+import * as userApi from '@/apis/user/'
+import * as roleApi from '@/apis/role/'
 import { onMounted, reactive, ref } from 'vue'
 import { GENDER_CONFIG } from '@/config/gender'
 import { GenderEnum } from '@/enums/gender'
@@ -131,13 +131,13 @@ const deleteUser = () => {
 const userList = ref<User[]>([])
 
 const getUserList = (params: GetUserList) => {
-  findUsers(params).then((res) => {
+  userApi.findUsers(params).then((res) => {
     userList.value = res.data.data.userList
     total.value = res.data.data.count
   })
 }
 const getRoles = () => {
-  findRoles().then((res) => {
+  roleApi.findRoles().then((res) => {
     roles.value = res.data.data
   })
 }
