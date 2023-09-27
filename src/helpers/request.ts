@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { getAccessToken } from './localstorge'
+import router from '@/router'
 
 const baseURL = import.meta.env.VITE_REQUEST_BASE_URL
 
@@ -25,6 +26,9 @@ axiosInstance.interceptors.response.use(
     return response
   },
   function (error) {
+    if (error.response.status === 401) {
+      router.replace('/signin')
+    }
     return Promise.reject(error)
   }
 )
