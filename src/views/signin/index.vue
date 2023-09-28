@@ -9,10 +9,10 @@
         </template>
         <el-form :model="form" label-width="120px" :rules="rules" ref="formRef">
           <el-form-item label="邮箱" prop="email">
-            <el-input v-model="form.email" />
+            <el-input v-model="form.email" name="email" />
           </el-form-item>
           <el-form-item label="密码" prop="password"
-            ><el-input v-model="form.password" />
+            ><el-input v-model="form.password" type="password" name="password" show-password />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onSubmit(formRef)">登录</el-button>
@@ -78,14 +78,10 @@ const onSubmit = (formEl: FormInstance | undefined) => {
       signInWithEmail({
         email: form.email,
         password: form.password
+      }).then((res) => {
+        setAccessToken(res.data.data.access_token)
+        router.replace('/home')
       })
-        .then((res) => {
-          setAccessToken(res.data.data.access_token)
-          router.replace('/home')
-        })
-        .catch((err) => {
-          console.log(err)
-        })
     } else {
       console.log('error submit!')
     }

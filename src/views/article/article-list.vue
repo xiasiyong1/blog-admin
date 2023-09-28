@@ -47,7 +47,7 @@
       <el-table-column prop="title" label="文章标题" />
       <el-table-column prop="category" label="文章分类">
         <template #default="scope">
-          <span>{{ articleCategoryNameMap[scope.row.categoryId] }}</span>
+          <ElTag>{{ articleCategoryNameMap[scope.row.categoryId] }}</ElTag>
         </template>
       </el-table-column>
       <el-table-column prop="tags" label="文章标签">

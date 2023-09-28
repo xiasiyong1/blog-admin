@@ -28,6 +28,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="search">搜索</el-button>
+        <el-button type="success" @click="showInviteDialog">邀请</el-button>
       </el-form-item>
     </el-form>
     <el-table :data="userList" border stripe style="width: 100%">
@@ -92,20 +93,72 @@
       v-model:current-page="form.currentPage"
       class="mt-4"
     />
+    <ElDialog title="邀请用户" v-model="inviteDialogVisible">
+      <ElForm ref="formRef" :model="inviteFrom" :rules="rules">
+        <ElFormItem label="邮箱" prop="email">
+          <ElInput placeholder="请输入邮箱" v-model="inviteFrom.email" />
+        </ElFormItem>
+        <ElFormItem label="角色" prop="roleId">
+          <ElSelect placeholder="请选择" v-model="inviteFrom.roleId">
+            <ElOption :label="role.name" :value="role.id" v-for="role in roles" :key="role.id" />
+          </ElSelect>
+        </ElFormItem>
+        <ElFormItem>
+          <ElButton @click="hideInviteDialog">取消</ElButton>
+          <ElButton type="primary" @click="inviteUser(formRef)">确认</ElButton>
+        </ElFormItem>
+      </ElForm>
+    </ElDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import * as userApi from '@/apis/user/'
 import * as roleApi from '@/apis/role/'
+import * as authApi from '@/apis/auth/'
 import { onMounted, reactive, ref } from 'vue'
 import { GENDER_CONFIG } from '@/config/gender'
 import { GenderEnum } from '@/enums/gender'
 import type { GetUserList, User } from '@/types/user'
 import type { Role } from '@/types/role'
+import { ElDialog, ElForm, ElFormItem, ElInput, ElSelect, ElOption, ElMessage } from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus'
+const EMAIL_REG = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/
 
 const total = ref(0)
 const roles = ref<Role[]>()
+
+interface InviteForm {
+  email: string
+  roleId: number | undefined
+}
+
+const inviteFrom = ref<InviteForm>({
+  email: '',
+  roleId: undefined
+})
+const formRef = ref<FormInstance>()
+
+const validateEmail = (rule: any, value: any, callback: any) => {
+  if (value === '') {
+    callback(new Error('请输入邮箱'))
+  } else if (!EMAIL_REG.test(value)) {
+    callback(new Error('请输入正确的邮箱'))
+  } else {
+    callback()
+  }
+}
+
+const rules = reactive<FormRules<InviteForm>>({
+  email: [{ required: true, validator: validateEmail }],
+  roleId: [
+    {
+      required: true,
+      message: '请选择角色',
+      trigger: 'change'
+    }
+  ]
+})
 
 const form = reactive({
   username: '',
@@ -115,6 +168,25 @@ const form = reactive({
   currentPage: 1,
   pageSize: 10
 })
+
+const inviteUser = (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  formEl.validate((valid) => {
+    if (valid) {
+      authApi
+        .sendInviteEmail({
+          email: inviteFrom.value.email,
+          roleId: inviteFrom.value.roleId as number
+        })
+        .then((res) => {
+          console.log(res)
+          ElMessage.success('邀请成功')
+          hideInviteDialog()
+        })
+      console.log('submit!')
+    }
+  })
+}
 
 const getGenderText = (gender: GenderEnum) => {
   return GENDER_CONFIG[gender || GenderEnum.UN_KNOWN]
@@ -140,6 +212,14 @@ const getRoles = () => {
   roleApi.findRoles().then((res) => {
     roles.value = res.data.data
   })
+}
+const inviteDialogVisible = ref(false)
+
+const showInviteDialog = () => {
+  inviteDialogVisible.value = true
+}
+const hideInviteDialog = () => {
+  inviteDialogVisible.value = false
 }
 
 onMounted(() => {

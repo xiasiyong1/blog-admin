@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { computed } from 'vue'
+import * as userApi from '@/apis/user'
+import { computed, onMounted, ref } from 'vue'
 import type { MenuItem } from '@/types/menu'
+import { ElMenu, ElMenuItem, ElRow, ElCol, ElAvatar } from 'element-plus'
+import { getDefaultAvatar } from '@/helpers/avatar'
+import { removeAccessToken } from '@/helpers/localstorge'
+import type { User } from '@/types/user'
 
 const menuList: MenuItem[] = [
   {
@@ -53,12 +58,49 @@ const activeKey = computed(() => {
   return key
 })
 const router = useRouter()
+const userInfo = ref<User | null>()
+const onCommand = (command: string) => {
+  if (command === 'profile') {
+    router.push(`/home/user/detail/${userInfo.value?.id}`)
+  } else if (command === 'logout') {
+    removeAccessToken()
+    router.push('/signin')
+  }
+}
+
+const avatar = computed(() => {
+  if (userInfo.value) {
+    return userInfo.value.avatar
+      ? `${import.meta.env.VITE_IMAGE_PREVIEW_PREFIX}${userInfo.value.avatar}`
+      : getDefaultAvatar(userInfo.value?.gender)
+  }
+  return ''
+})
+const getUserInfo = () => {
+  userApi.getUserInfo().then((res) => {
+    userInfo.value = res.data.data
+  })
+}
+onMounted(() => {
+  getUserInfo()
+})
 </script>
 
 <template>
   <div class="h-[48px] bg-blue-200 flex items-center p-4">
     <img src="../../assets/logo.png" class="w-[30px] h-[30px] object-fill" alt="" />
     <h1 class="ml-2">管理系统</h1>
+    <div class="flex-1 flex justify-end">
+      <el-dropdown placement="top-end" @command="onCommand">
+        <ElAvatar :src="avatar" :size="32" />
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="profile">个人信息</el-dropdown-item>
+            <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+    </div>
   </div>
   <el-row class="h-[100vh]">
     <el-col :span="3">

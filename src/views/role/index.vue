@@ -93,10 +93,10 @@ const addRoleFormRef = ref<FormInstance>()
 const rules = reactive<FormRules<AddRoleForm>>({
   name: [
     {
-      min: 3,
+      min: 2,
       max: 20,
       required: true,
-      message: '角色名称的长度在3-20个字符之间',
+      message: '角色名称的长度在2-20个字符之间',
       trigger: ['blur']
     }
   ]

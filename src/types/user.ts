@@ -6,7 +6,10 @@ export interface User {
   email: string
   id: string
   roles: Role[]
-  profile: Profile
+  avatar: string
+  phone: string
+  username: string
+  gender: GenderEnum
 }
 
 export interface Profile {

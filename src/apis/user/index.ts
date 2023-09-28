@@ -10,8 +10,12 @@ import type { SimpleSuccessResponse } from '@/types/base'
 export const findUsers = (params: FindUsersParams) => {
   return axiosInstance.get<FindUsersResponse>('/user/list', { params })
 }
-export const getUserInfo = () => {}
-export const updateUserInfo = () => {}
+export const getUserInfo = () => {
+  return axiosInstance.get<UserInfoResponse>('/user')
+}
+export const updateUserInfo = (params: UpdateUserDto) => {
+  return axiosInstance.patch<UserInfoResponse>('/user', params)
+}
 
 export const getUserInfoById = (userId: string) => {
   return axiosInstance.get<UserInfoResponse>(`/user/${userId}`)

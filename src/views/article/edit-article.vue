@@ -103,7 +103,7 @@ const form = reactive<CreateArticleDto>({
 const publishPopVisible = ref(false)
 
 const handleAvatarSuccess: UploadProps['onSuccess'] = (response, uploadFile) => {
-  form.cover = import.meta.env.VITE_IMAGE_PREVIEW_PREFIX + response
+  form.cover = import.meta.env.VITE_IMAGE_PREVIEW_PREFIX + response.data
 }
 
 enum ARTICLE_STATUS {
@@ -221,4 +221,3 @@ onMounted(() => {
   text-align: center;
 }
 </style>
-@/types/articke-tag
