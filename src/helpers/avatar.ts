@@ -9,6 +9,6 @@ const DEFAULT_AVATAR_MAP = {
   [GenderEnum.UN_KNOWN]: un_kown
 }
 
-export const getDefaultAvatar = (gender: GenderEnum) => {
+export const getDefaultAvatar = (gender: GenderEnum | undefined = GenderEnum.UN_KNOWN) => {
   return DEFAULT_AVATAR_MAP[gender]
 }

@@ -24,9 +24,6 @@
       <el-table-column label="操作">
         <template #default="scope">
           <el-button-group>
-            <el-button text type="primary" size="small">
-              <router-link :to="`/home/role/casl/${scope.row.id}`">权限管理</router-link>
-            </el-button>
             <el-button text type="primary" size="small" @click="editRole(scope.row)"
               >编辑角色</el-button
             >

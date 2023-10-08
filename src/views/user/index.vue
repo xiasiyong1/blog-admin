@@ -75,7 +75,7 @@
               title="确定要删除吗?"
               confirm-button-text="确定"
               cancel-button-text="取消"
-              @confirm="deleteUser"
+              @confirm="deleteUser(scope.row.id)"
             >
               <template #reference>
                 <el-button text type="danger" size="small">删除用户</el-button>
@@ -196,8 +196,11 @@ const search = () => {
   getUserList(form)
 }
 
-const deleteUser = () => {
-  alert(1)
+const deleteUser = (id) => {
+  userApi.deleteUserById(id).then(() => {
+    ElMessage.success('删除成功')
+    getUserList(form)
+  })
 }
 
 const userList = ref<User[]>([])
