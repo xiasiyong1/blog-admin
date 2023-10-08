@@ -14,6 +14,10 @@ export const DYNAMIC_ROUTES: RouteRecordRaw[] = [
     component: ArticleCategory,
     meta: { roles: [RoleEnum.ADMIN_ARTICLE] }
   },
-  { path: 'article/tag', component: ArticleTag, meta: { roles: [RoleEnum.ADMIN_ARTICLE] } },
+  {
+    path: 'article/tag',
+    component: ArticleTag,
+    meta: { roles: [RoleEnum.ADMIN_ARTICLE] }
+  },
   { path: 'role', component: Role, meta: { roles: [] } }
 ]

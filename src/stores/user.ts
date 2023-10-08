@@ -5,12 +5,16 @@ import * as userApi from '@/apis/user'
 
 export const useUserStore = defineStore('user', () => {
   const userInfo = ref<User>()
+  const isMenuInit = ref(false)
   const roles = computed(() => userInfo.value?.roles ?? [])
-  const getUserInfo = () => {
-    userApi.getUserInfo().then((res) => {
-      userInfo.value = res.data.data
-    })
+  const getUserInfo = async () => {
+    const result = await userApi.getUserInfo()
+    userInfo.value = result.data.data
   }
 
-  return { userInfo, getUserInfo, roles }
+  const changeMenuInitStatus = (status: boolean) => {
+    isMenuInit.value = status
+  }
+
+  return { userInfo, getUserInfo, roles, isMenuInit, changeMenuInitStatus }
 })

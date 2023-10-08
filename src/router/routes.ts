@@ -25,15 +25,18 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/signin',
-    component: SignIn
+    component: SignIn,
+    meta: { doNotNeedsAuth: true }
   },
   {
     path: '/signup',
-    component: SignUp
+    component: SignUp,
+    meta: { doNotNeedsAuth: true }
   },
   {
     path: '/invite',
-    component: InviteUser
+    component: InviteUser,
+    meta: { doNotNeedsAuth: true }
   }
 ]
 

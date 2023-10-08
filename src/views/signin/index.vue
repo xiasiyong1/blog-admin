@@ -40,6 +40,7 @@ import { setAccessToken } from '@/helpers/localstorge'
 
 const router = useRouter()
 const route = useRoute()
+console.log(route)
 
 const form = reactive({
   email: route.query.email as string,
@@ -80,7 +81,8 @@ const onSubmit = (formEl: FormInstance | undefined) => {
         password: form.password
       }).then((res) => {
         setAccessToken(res.data.data.access_token)
-        router.replace('/home')
+        const redirect = route.query.redirect as string
+        router.replace(redirect || '/home')
       })
     } else {
       console.log('error submit!')

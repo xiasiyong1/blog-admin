@@ -1,49 +1,16 @@
 <script setup lang="ts">
-import { useRouter, type RouteRecordNormalized } from 'vue-router'
-import { computed, onMounted, watch, ref } from 'vue'
+import { computed } from 'vue'
 import type { MenuItem } from '@/types/menu'
 import { ElMenu, ElMenuItem, ElRow, ElCol, ElAvatar } from 'element-plus'
 import { getDefaultAvatar } from '@/helpers/avatar'
 import { removeAccessToken } from '@/helpers/localstorge'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
-import { generateDynamicRoutes } from '@/router/helper'
-import router from '@/router'
+import { useRouter } from 'vue-router'
+import useMenuList from '@/hooks/use-menu-list'
 
-const MENU_CONFIG: MenuItem[] = [
-  {
-    title: '成员管理',
-    key: 'user',
-    path: '/home/user'
-  },
-  {
-    title: '文章管理',
-    key: 'article',
-    children: [
-      {
-        title: '文章列表',
-        key: 'articleList',
-        path: '/home/article/list'
-      },
-      {
-        title: '文章分类',
-        key: 'articleCategory',
-        path: '/home/article/category'
-      },
-      {
-        title: '文章标签',
-        key: 'articleTag',
-        path: '/home/article/tag'
-      }
-    ]
-  },
-  {
-    title: '角色管理',
-    key: 'role',
-    path: '/home/role'
-  }
-]
-const menuList = ref<MenuItem[]>([])
+const router = useRouter()
+
 const activeKey = computed(() => {
   const path = router.currentRoute.value.path
   let key = ''
@@ -62,43 +29,8 @@ const activeKey = computed(() => {
 })
 
 const userStore = useUserStore()
-const { userInfo, roles } = storeToRefs(userStore)
-
-const filterMenuList = (
-  menuConfig: MenuItem[],
-  routerMap: Record<string, RouteRecordNormalized>
-): MenuItem[] => {
-  // 遍历menuConfig，如果menuConfig中某个菜单的path在routerMap中不存在，则删除该菜单
-  const dfs = (menu: MenuItem[]) => {
-    menu.forEach((item) => {
-      if (item.children) {
-        dfs(item.children)
-      }
-      if (item.path && !routerMap[item.path]) {
-        menu.splice(menu.indexOf(item), 1)
-      }
-    })
-  }
-  const menuList = JSON.parse(JSON.stringify(menuConfig))
-  dfs(menuList)
-  return menuList
-}
-
-// 处理菜单权限
-watch(roles, () => {
-  const dynamicRoutes = generateDynamicRoutes(roles.value)
-  dynamicRoutes.forEach((route) => {
-    router.addRoute('home', route)
-  })
-  const routerMap = router.getRoutes().reduce(
-    (map, route) => {
-      map[route.path] = route
-      return map
-    },
-    {} as Record<string, RouteRecordNormalized>
-  )
-  menuList.value = filterMenuList(MENU_CONFIG, routerMap)
-})
+const { userInfo } = storeToRefs(userStore)
+const { menuList } = useMenuList()
 
 const onCommand = (command: string) => {
   if (command === 'profile') {
@@ -116,10 +48,6 @@ const avatar = computed(() => {
       : getDefaultAvatar(userInfo.value?.gender)
   }
   return ''
-})
-
-onMounted(() => {
-  userStore.getUserInfo()
 })
 </script>
 
