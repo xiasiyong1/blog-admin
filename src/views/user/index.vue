@@ -68,9 +68,9 @@
       <el-table-column label="操作">
         <template #default="scope">
           <el-button-group>
-            <!-- <el-button text type="primary" size="small">
-              <router-link :to="`/home/user/casl/${scope.row.id}`">权限管理</router-link>
-            </el-button> -->
+            <el-button text type="primary" size="small">
+              <router-link :to="`/home/user/detail/${scope.row.id}`">用户信息</router-link>
+            </el-button>
             <el-popconfirm
               title="确定要删除吗?"
               confirm-button-text="确定"

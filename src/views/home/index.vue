@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import type { MenuItem } from '@/types/menu'
 import { ElMenu, ElMenuItem, ElRow, ElCol, ElAvatar } from 'element-plus'
 import { getDefaultAvatar } from '@/helpers/avatar'
-import { removeAccessToken } from '@/helpers/localstorge'
+import { removeAccessToken } from '@/helpers/local-storge'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
@@ -34,7 +34,7 @@ const { menuList } = useMenuList()
 
 const onCommand = (command: string) => {
   if (command === 'profile') {
-    router.push(`/home/user/detail/${userInfo.value?.id}`)
+    router.push('/home/user/profile')
   } else if (command === 'logout') {
     removeAccessToken()
     router.push('/signin')
@@ -96,3 +96,4 @@ const avatar = computed(() => {
     </el-col>
   </el-row>
 </template>
+@/helpers/local-storge

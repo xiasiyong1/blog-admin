@@ -6,6 +6,7 @@ import SignIn from '@/views/signin/index.vue'
 import SignUp from '@/views/signup/index.vue'
 import Home from '@/views/home/index.vue'
 import InviteUser from '@/views/invite-user/index.vue'
+import UserProfile from '@/views/profile/index.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -20,7 +21,8 @@ const routes: RouteRecordRaw[] = [
     children: [
       { path: 'article/list', component: ArticleList },
       { path: 'article/:id', component: EditArticle },
-      { path: 'article/create', component: EditArticle }
+      { path: 'article/create', component: EditArticle },
+      { path: 'user/profile', component: UserProfile }
     ]
   },
   {

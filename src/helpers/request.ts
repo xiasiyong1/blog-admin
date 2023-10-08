@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { getAccessToken } from './localstorge'
+import { getAccessToken } from './local-storge'
 import router from '@/router'
 
 const baseURL = import.meta.env.VITE_REQUEST_BASE_URL

@@ -85,17 +85,14 @@ const onSubmit = () => {
 }
 
 const getUserInfoById = () => {
-  const userId = route.params.id
-  if (userId) {
-    userApi.getUserInfoById(userId as string).then((res) => {
-      const userInfo = res.data.data
-      form.avatar = userInfo.avatar
-      form.username = userInfo.username
-      form.gender = userInfo.gender
-      form.email = userInfo.email
-      form.roleIds = userInfo.roles.map((role) => role.id)
-    })
-  }
+  userApi.getUserInfo().then((res) => {
+    const userInfo = res.data.data
+    form.avatar = userInfo.avatar
+    form.username = userInfo.username
+    form.gender = userInfo.gender
+    form.email = userInfo.email
+    form.roleIds = userInfo.roles.map((role) => role.id)
+  })
 }
 const getRoles = () => {
   roleApi.findRoles().then((res) => {

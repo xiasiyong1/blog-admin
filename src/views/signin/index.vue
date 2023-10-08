@@ -36,7 +36,7 @@ import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { signInWithEmail } from '@/apis/auth'
 import type { FormInstance, FormRules } from 'element-plus'
-import { setAccessToken } from '@/helpers/localstorge'
+import { setAccessToken } from '@/helpers/local-storge'
 
 const router = useRouter()
 const route = useRoute()
@@ -92,3 +92,4 @@ const onSubmit = (formEl: FormInstance | undefined) => {
 </script>
 
 <style></style>
+@/helpers/local-storge

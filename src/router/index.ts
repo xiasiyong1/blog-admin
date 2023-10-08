@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory, type RouteRecordNormalized } from 'vue-router'
 import routes from './routes'
-import { getAccessToken } from '@/helpers/localstorge'
+import { getAccessToken } from '@/helpers/local-storge'
 import { useUserStore } from '@/stores/user'
 import { generateDynamicRoutes } from './helper'
 
