@@ -9,7 +9,7 @@ const useArticleRecommend = () => {
   const articleRecommendStatusMap = computed(() => {
     return articleRecommendList.value.reduce(
       (acc, cur) => {
-        acc[cur.articleId] = true
+        acc[cur.id] = true
         return acc
       },
       {} as Record<number, boolean>
@@ -36,7 +36,7 @@ const useArticleRecommend = () => {
     getArticleRecommendList()
   })
 
-  console.log(articleRecommendStatusMap)
+  console.log(1234, articleRecommendStatusMap)
 
   return {
     articleRecommendList,
